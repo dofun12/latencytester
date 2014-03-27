@@ -1,4 +1,0 @@
-latencytester
-=============
-
-LatencyTester
