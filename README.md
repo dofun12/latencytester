@@ -1,6 +1,6 @@
-latencytester
+Ping to Chart
 =============
 
-LatencyTester
+The Ping to Chart
 
-Transform the ping command in chart
+Use the ping command to create a chart
