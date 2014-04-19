@@ -12,12 +12,9 @@ import info.monitorenter.gui.chart.labelformatters.LabelFormatterDate;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,7 +24,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import org.lemano.pingchartgenerator.model.Dominio;
 
 /**
@@ -346,8 +342,7 @@ public class Principal extends javax.swing.JFrame {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         IAxisLabelFormatter formatter = new LabelFormatterDate(df);
         chart.getAxisX().setFormatter(formatter);
-        // Add the trace to the chart. This has to be done before adding points
-        // (deadlock prevention):
+
         jPanel2.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
