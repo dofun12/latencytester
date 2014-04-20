@@ -22,10 +22,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import org.lemano.diapingchartgeneratorlpers.JListPersonalizado;
 import org.lemano.pingchartgenerator.dao.DominioDao;
+import org.lemano.pingchartgenerator.helpers.JComboBoxCores;
 import org.lemano.pingchartgenerator.impl.DominioDaoImpl;
+import org.lemano.pingchartgenerator.model.Cor;
 import org.lemano.pingchartgenerator.model.Dominio;
 
 /**
@@ -40,16 +45,57 @@ public class Principal extends javax.swing.JFrame {
     static List<Dominio> dominios = new ArrayList<Dominio>();
     static ITrace2D trace2 = new Trace2DLtd(200);
     static ITrace2D trace3 = new Trace2DLtd(200);
+    Timer timer;
     TimerTask task;
     private DominioDaoImpl dominioDao = new DominioDaoImpl();
     int domains = 3;
     int coluna = 0;
+    private Dominio d;
+
     public Principal() {
-       
+        iniciar();
+    }
+
+    public void updateChart() {
+        timer.cancel();
+        timer.purge();
+        task.cancel();
+        jPanel1.removeAll();
+        jPanel1.validate();
+        jPanel2.removeAll();
+        jPanel2.validate();
+        jPanel1.add(getChart(new Dimension(1200, 200)));
+        jPanel1.validate();
+        jPanel2.validate();
+        loop(1000);
+    }
+
+    public void iniciar() {
         initComponents();
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(getChart(new Dimension(1200, 200)), BorderLayout.CENTER);
+        iniciarListaDominios();
         loop(1000);
+    }
+
+    public void adicionarInfoCaixaTexto() {
+        jTextField2.setText(d.getNome());
+        jTextField3.setText(d.getEndereco());
+        jComboBox1.setSelectedItem(d.getColorId());
+        jComboBox1.repaint();
+    }
+
+    public void capturarInfoCaixaTexto() {
+        d.setEndereco(jTextField3.getText());
+        d.setNome(jTextField2.getText());
+    }
+
+    public void iniciarListaDominios() {
+        jList1.setModel(new JListPersonalizado(dominios));
+        jComboBox1.setModel(new JComboBoxCores(dominioDao.getCores()));
+        jButton2.setEnabled(false);
+        jButton3.setEnabled(false);
+        jButton4.setEnabled(false);
     }
 
     /**
@@ -80,10 +126,6 @@ public class Principal extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PingToChart");
@@ -127,6 +169,17 @@ public class Principal extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
+        jList1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jList1MouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jList1MousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jList1MouseReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(jList1);
 
         jLabel11.setText("Selecione");
@@ -134,10 +187,19 @@ public class Principal extends javax.swing.JFrame {
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jComboBox1ItemStateChanged(evt);
+            }
+        });
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         jLabel14.setText("Cor");
 
-        jTextField3.setText("jTextField3");
         jTextField3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField3ActionPerformed(evt);
@@ -146,7 +208,6 @@ public class Principal extends javax.swing.JFrame {
 
         jLabel13.setText("Endereco IP");
 
-        jTextField2.setText("jTextField2");
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField2ActionPerformed(evt);
@@ -196,10 +257,25 @@ public class Principal extends javax.swing.JFrame {
         jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButton2.setText("Adicionar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Deletar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Alterar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -258,48 +334,6 @@ public class Principal extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Dominios", jPanel3);
 
-        jLabel10.setText("Numero de dominios: ");
-
-        jTextField1.setText("3");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
-
-        jButton1.setText("Salvar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 396, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addContainerGap(264, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Config", jPanel4);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -314,14 +348,6 @@ public class Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
     private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField3ActionPerformed
@@ -330,23 +356,96 @@ public class Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField2ActionPerformed
 
+    private void jList1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseClicked
+
+    }//GEN-LAST:event_jList1MouseClicked
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox1ItemStateChanged
+        JComboBox jcb = (JComboBox) evt.getSource();
+        JComboBoxCores jbc = (JComboBoxCores) jcb.getModel();
+        Cor cor = (Cor) jbc.getSelectedItem();
+        if(d!=null){
+            d.setColorId(cor);
+        }
+    }//GEN-LAST:event_jComboBox1ItemStateChanged
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        capturarInfoCaixaTexto();
+        dominioDao.save(d);
+        updateChart();
+        iniciarListaDominios();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jList1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MousePressed
+
+    }//GEN-LAST:event_jList1MousePressed
+
+    private void jList1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList1MouseReleased
+        JList theList = (JList) evt.getSource();
+        int index = theList.locationToIndex(evt.getPoint());
+        if (index >= 0) {
+            JListPersonalizado jlp = (JListPersonalizado) theList.getModel();
+            d = jlp.getDominio(index);
+            if (d != null) {
+                if (d.getId() < 0) {
+                    jButton2.setEnabled(true);
+                    jButton3.setEnabled(false);
+                    jButton4.setEnabled(false);
+                } else {
+                    jButton2.setEnabled(false);
+                    jButton3.setEnabled(true);
+                    jButton4.setEnabled(true);
+                }
+                adicionarInfoCaixaTexto();
+            } else {
+                jButton2.setEnabled(false);
+                jButton3.setEnabled(false);
+                jButton4.setEnabled(false);
+            }
+        }
+    }//GEN-LAST:event_jList1MouseReleased
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (d != null && d.getId() != null && d.getId() < 0) {
+            d.setId(null);
+            capturarInfoCaixaTexto();
+            dominioDao.save(d);
+            updateChart();
+            iniciarListaDominios();
+            jComboBox1.repaint();
+            jList1.repaint();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if(d != null && d.getId() != null && d.getId()>0){
+            dominioDao.deletar(d);
+            updateChart();
+            iniciarListaDominios();
+            jComboBox1.repaint();
+            jList1.repaint();
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    
-
     public JPanel getChart(Dimension d) {
         Chart2D chart = new Chart2D();
         dominios = dominioDao.getDominios();
         // Create an ITrace:
         // Note that dynamic charts need limited amount of values!!!
-        
-        if (dominios==null || dominios.isEmpty()) {
-            dominios.add(new Dominio("Google", Color.RED, "www.google.com.br"));
-            dominios.add(new Dominio("Roteador", Color.BLUE, "192.168.25.1"));
-            dominios.add(new Dominio("Uol", Color.YELLOW, "www.uol.com.br"));
+
+        if (dominios == null || dominios.isEmpty()) {
+            //dominios.add(new Dominio("Google", Color.RED, "www.google.com.br"));
+            //dominios.add(new Dominio("Roteador", Color.BLUE, "192.168.25.1"));
+            //dominios.add(new Dominio("Uol", Color.YELLOW, "www.uol.com.br"));
         }
-        dominioDao.save(dominios);
+        //dominioDao.save(dominios);
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         IAxisLabelFormatter formatter = new LabelFormatterDate(df);
         chart.getAxisX().setFormatter(formatter);
@@ -355,27 +454,27 @@ public class Principal extends javax.swing.JFrame {
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 0.3;
-        
-        int linha=0;
-        
+
+        int linha = 0;
+
         for (Dominio dominio : dominios) {
-            coluna=0;
+            coluna = 0;
             chart.addTrace(dominio.getTrace());
             c.gridy = linha;
-            adicionarInformacao(dominio.getNome()+": ","txt_" + dominio.getNome(),c);
+            adicionarInformacao(dominio.getNome() + " - "+dominio.getEndereco()+" : ", "txt_" + dominio.getNome(), c);
             coluna++;
-            adicionarInformacao("Pico: ","pico_" + dominio.getNome(),c);
-            coluna++;                        
-            adicionarInformacao("Perda: ","perda_" + dominio.getNome(),c);
-            coluna++;                        
-            adicionarInformacao("Media: ","media_" + dominio.getNome(),c);
-            coluna++;                        
+            adicionarInformacao("Pico: ", "pico_" + dominio.getNome(), c);
+            coluna++;
+            adicionarInformacao("Media: ", "media_" + dominio.getNome(), c);
+            coluna++;
+            adicionarInformacao("Perda: ", "perda_" + dominio.getNome(), c);
+            coluna++;
             linha++;
         }
         return chart;
     }
 
-    public void adicionarInformacao(String label, String key,GridBagConstraints c) {
+    public void adicionarInformacao(String label, String key, GridBagConstraints c) {
         c.gridx = coluna;
         JLabel txtNome = new JLabel(label);
         jPanel2.add(txtNome, c);
@@ -385,7 +484,7 @@ public class Principal extends javax.swing.JFrame {
         status.setName(key);
         jPanel2.add(status, c);
     }
-    
+
     public static void main(String args[]) {
         System.out.println(Color.GREEN.getRGB());
         System.out.println(Color.black.getRGB());
@@ -398,19 +497,16 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public void loop(int millis) {
-        Timer timer = new Timer(true);
+        timer = new Timer(true);
         task = new Tasker(dominios, jPanel2);
         Calendar time = Calendar.getInstance(new Locale("BR"));
         timer.schedule(task, time.getTime(), millis);
-
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JComboBox jComboBox1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -419,13 +515,11 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
     // End of variables declaration//GEN-END:variables

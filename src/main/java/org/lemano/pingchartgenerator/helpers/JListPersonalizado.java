@@ -4,11 +4,13 @@
  * and open the template in the editor.
  */
 
-package org.hibernate.dialect.helpers;
+package org.lemano.diapingchartgeneratorlpers;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractListModel;
+import org.lemano.pingchartgenerator.model.Cor;
 import org.lemano.pingchartgenerator.model.Dominio;
 
 /**
@@ -19,7 +21,18 @@ public class JListPersonalizado extends AbstractListModel{
     public List<Dominio> dominios = new ArrayList<Dominio>();
 
     public JListPersonalizado(List<Dominio> ds) {
-        this.dominios = ds;
+        dominios = new ArrayList<Dominio>();
+        Dominio d = new Dominio();
+        d.setId(-1);
+        d.setNome("Novo dominio");
+        d.setEndereco("");
+        dominios.add(d);
+        this.dominios.addAll(ds);
+        
+    }
+    
+    public Dominio getDominio(int index){
+        return dominios.get(index);
     }
     
     public void add(Dominio d){

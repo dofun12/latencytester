@@ -8,34 +8,66 @@ package org.lemano.pingchartgenerator.model;
 
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
-import java.awt.Color;
+import java.io.Serializable;
+import javax.annotation.Generated;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.lemano.pingchartgenerator.helpers.Converter;
 
 /**
  *
  * @author Kevim
  */
-public class Dominio{
-    private ITrace2D trace;
+@Entity
+@Table(name = "dominio")
+public class Dominio implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "nome")
     private String nome;
-    private Color color;
+    @Column(name = "endereco")
     private String endereco;
+    @JoinColumn(name = "color_id", referencedColumnName = "id")
+    @ManyToOne
+    private Cor colorId;
     
-    public Dominio(String n,Color c,String e) {
-        trace = new Trace2DLtd(200);
-        this.nome = n;
-        this.color = c;
-        this.endereco = e;
+    @Transient
+    private ITrace2D trace;
+
+    public Dominio() {
         
-        trace.setColor(c);
-        trace.setName(n);
     }
 
-    public ITrace2D getTrace() {
-        return trace;
+    public Dominio(Integer id, String nome, String endereco, Cor colorId) {
+        this.id = id;
+        this.nome = nome;
+        this.endereco = endereco;
+        this.colorId = colorId;
     }
 
-    public void setTrace(ITrace2D trace) {
-        this.trace = trace;
+    
+    
+    public Dominio(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -46,14 +78,6 @@ public class Dominio{
         this.nome = nome;
     }
 
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
     public String getEndereco() {
         return endereco;
     }
@@ -61,6 +85,51 @@ public class Dominio{
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
+
+    public Cor getColorId() {
+        return colorId;
+    }
+
+    public void setColorId(Cor colorId) {
+        this.colorId = colorId;
+    }
+
+    public ITrace2D getTrace() {
+        if(trace==null){
+            this.trace = new Trace2DLtd(200);
+            trace.setColor(Converter.hexToColor(colorId.getHex()));
+            trace.setName(nome);
+        }    
+        return trace;
+    }
+
+    public void setTrace(ITrace2D trace) {
+        this.trace = trace;
+    }
     
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Dominio)) {
+            return false;
+        }
+        Dominio other = (Dominio) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.lemano.pingchartgenerator.model.DominioData[ id=" + id + " ]";
+    }
     
 }

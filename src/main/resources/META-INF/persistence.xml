@@ -2,8 +2,9 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
   <persistence-unit name="pingChart" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.ejb.HibernatePersistence</provider>
-    <class>org.lemano.pingchartgenerator.model.DominioData</class>
     <class>org.lemano.pingchartgenerator.model.Contact</class>
+    <class>org.lemano.pingchartgenerator.model.Cor</class>
+    <class>org.lemano.pingchartgenerator.model.Dominio</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:sqlite:mydb.db"/>
       <property name="javax.persistence.jdbc.password" value=""/>

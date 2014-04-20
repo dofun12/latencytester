@@ -60,17 +60,22 @@ public class Tasker extends TimerTask {
                         pico.put(d.getNome(), rand);
                     }
                 }
-                if(rand<=0){
+                if(rand==0){
                     Integer perda = perdas.get(d.getNome());
                     if(perda==null){
-                        perda=0;
+                        perdas.put(d.getNome(),1);
                     }else{
-                        perdas.put(d.getNome(),perda++);
+                        perdas.put(d.getNome(),perda+1);
                     }
                 }
                 if(dados.get(d.getNome())==null){
                     dados.put(d.getNome(),new ArrayList<Integer>());
                 }else{
+                    if(dados.get(d.getNome()).size()>5){
+                        Integer media = getMedia(dados.get(d.getNome())).intValue();
+                        dados.put(d.getNome(),new ArrayList<Integer>());
+                        dados.get(d.getNome()).add(media);
+                    }
                     dados.get(d.getNome()).add(rand);
                 }
                 status.put(d.getNome(), rand);
@@ -83,7 +88,7 @@ public class Tasker extends TimerTask {
     }
 
     
-    public float getMedia(List<Integer> dados){
+    public Float getMedia(List<Integer> dados){
         float soma=0;
         for(Integer i:dados){
             soma+=i;
@@ -114,8 +119,8 @@ public class Tasker extends TimerTask {
                 JLabel l = (JLabel) c;
                 Integer perda = perdas.get(nomeDominio);
                 String ms = "";
-                if(perda==null){
-                    ms="0";
+                if (perda==null) {
+                    ms = "0";
                 }else{
                     ms=""+perda;
                 }
