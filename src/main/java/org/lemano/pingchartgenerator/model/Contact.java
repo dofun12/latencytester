@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.lemano.pingchartgenerator.db;
+package org.lemano.pingchartgenerator.model;
 
 /**
  *

@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
-import org.lemano.pingchartgenerator.db.Contact;
+import org.lemano.pingchartgenerator.model.Contact;
 import org.lemano.pingchartgenerator.db.DataBaseManager;
 
 /**

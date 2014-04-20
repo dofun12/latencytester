@@ -24,6 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.lemano.pingchartgenerator.dao.DominioDao;
+import org.lemano.pingchartgenerator.impl.DominioDaoImpl;
 import org.lemano.pingchartgenerator.model.Dominio;
 
 /**
@@ -35,9 +37,15 @@ public class Principal extends javax.swing.JFrame {
     /**
      * Creates new form Principal
      */
+    static List<Dominio> dominios = new ArrayList<Dominio>();
+    static ITrace2D trace2 = new Trace2DLtd(200);
+    static ITrace2D trace3 = new Trace2DLtd(200);
+    TimerTask task;
+    private DominioDaoImpl dominioDao = new DominioDaoImpl();
     int domains = 3;
-    int coluna =0;
+    int coluna = 0;
     public Principal() {
+       
         initComponents();
         jPanel1.setLayout(new BorderLayout());
         jPanel1.add(getChart(new Dimension(1200, 200)), BorderLayout.CENTER);
@@ -325,20 +333,20 @@ public class Principal extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    static List<Dominio> dominios = new ArrayList<Dominio>();
-    static ITrace2D trace2 = new Trace2DLtd(200);
-    static ITrace2D trace3 = new Trace2DLtd(200);
-    TimerTask task;
+    
 
     public JPanel getChart(Dimension d) {
         Chart2D chart = new Chart2D();
+        dominios = dominioDao.getDominios();
         // Create an ITrace:
         // Note that dynamic charts need limited amount of values!!!
-        if (dominios.isEmpty()) {
+        
+        if (dominios==null || dominios.isEmpty()) {
             dominios.add(new Dominio("Google", Color.RED, "www.google.com.br"));
             dominios.add(new Dominio("Roteador", Color.BLUE, "192.168.25.1"));
             dominios.add(new Dominio("Uol", Color.YELLOW, "www.uol.com.br"));
         }
+        dominioDao.save(dominios);
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         IAxisLabelFormatter formatter = new LabelFormatterDate(df);
         chart.getAxisX().setFormatter(formatter);
@@ -346,7 +354,8 @@ public class Principal extends javax.swing.JFrame {
         jPanel2.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.weightx = 0.5;
+        c.weightx = 0.3;
+        
         int linha=0;
         
         for (Dominio dominio : dominios) {
@@ -378,6 +387,8 @@ public class Principal extends javax.swing.JFrame {
     }
     
     public static void main(String args[]) {
+        System.out.println(Color.GREEN.getRGB());
+        System.out.println(Color.black.getRGB());
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Principal().setVisible(true);

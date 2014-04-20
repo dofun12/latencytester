@@ -20,8 +20,12 @@ public class DataBaseManager {
     private EntityManager entityManager;
     private EntityManagerFactory entityManagerFactory;
 
-    public DataBaseManager() {
+    public void setUp(){
         entityManagerFactory = Persistence.createEntityManagerFactory("pingChart");
+    }
+    
+    public DataBaseManager() {
+        setUp();
     }
 
     public Session getSession() {
@@ -32,7 +36,7 @@ public class DataBaseManager {
     }
 
     public EntityManager getEntityManager() {
-        if(entityManager==null){
+        if(entityManager==null||!entityManager.isOpen()){
             entityManager = entityManagerFactory.createEntityManager();
         }
         return entityManager;
