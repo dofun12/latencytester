@@ -5,14 +5,10 @@
  */
 package org.lemano.pingchartgenerator.db;
 
-import java.util.Properties;
-import org.hibernate.HibernateException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  *
@@ -21,34 +17,33 @@ import org.hibernate.service.ServiceRegistryBuilder;
 public class DataBaseManager {
 
     private Session session;
-    private SessionFactory sessionFactory = null;
-    private ServiceRegistry serviceRegistry = null;
-
-    private SessionFactory configureSessionFactory() throws HibernateException {
-        Configuration configuration = new Configuration();
-        configuration.configure();
-        Properties properties = configuration.getProperties();
-        serviceRegistry = new ServiceRegistryBuilder().applySettings(properties).buildServiceRegistry();
-        sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-        return sessionFactory;
-    }
+    private EntityManager entityManager;
+    private EntityManagerFactory entityManagerFactory;
 
     public DataBaseManager() {
-        configureSessionFactory();
-        try {
-            session = sessionFactory.openSession();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        entityManagerFactory = Persistence.createEntityManagerFactory("pingChart");
     }
 
     public Session getSession() {
+        if(session==null){
+            session = getEntityManager().unwrap(org.hibernate.Session.class);
+        }
         return session;
+    }
+
+    public EntityManager getEntityManager() {
+        if(entityManager==null){
+            entityManager = entityManagerFactory.createEntityManager();
+        }
+        return entityManager;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     public void setSession(Session session) {
         this.session = session;
     }
-    
-    
+
 }

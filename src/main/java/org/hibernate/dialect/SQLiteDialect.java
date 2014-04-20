@@ -44,6 +44,8 @@ public class SQLiteDialect extends Dialect {
         registerColumnType(Types.BLOB, "blob");
         registerColumnType(Types.CLOB, "clob");
         registerColumnType(Types.BOOLEAN, "boolean");
+        registerColumnType(Types.NULL, "null");
+        registerHibernateType(Types.NULL, "null");
 
         //registerFunction( "abs", new StandardSQLFunction("abs") );
         registerFunction("concat", new VarArgsSQLFunction(StandardBasicTypes.STRING, "", "||", ""));

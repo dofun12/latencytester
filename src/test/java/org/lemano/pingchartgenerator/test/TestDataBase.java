@@ -6,9 +6,12 @@
 package org.lemano.pingchartgenerator.test;
 
 import java.util.List;
+import java.util.Map;
+import javax.persistence.EntityManager;
 import junit.framework.TestCase;
+import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
+import org.hibernate.transform.Transformers;
 import org.lemano.pingchartgenerator.db.Contact;
 import org.lemano.pingchartgenerator.db.DataBaseManager;
 
@@ -34,49 +37,31 @@ public class TestDataBase extends TestCase {
 
     // TODO add test methods here. The name must begin with 'test'. For example:
     public void testDataBase() {
-
-        // Configure the session factory
-        Session session = null;
-        Transaction tx = null;
-
-        try {
-            DataBaseManager dataBaseManager = new DataBaseManager();
-            session = dataBaseManager.getSession();
-            tx = session.beginTransaction();
-
-            // Creating Contact entity that will be save to the sqlite database
-            Contact myContact = new Contact(7, "teste", "asdsadads");
-
-            // Saving to the database
-            session.save(myContact);
-            // Committing the change in the database.
-
-            Contact c = (Contact) session.createQuery("from Contact c where c.id=7").uniqueResult();
-            if (c != null) {
-                session.delete(c);
-
-            }
-
-            session.flush();
-            tx.commit();
-
-            // Fetching saved data
-            List<Contact> contactList = session.createQuery("from Contact").list();
-
-            for (Contact contact : contactList) {
-                System.out.println("Id: " + contact.getId() + " | Name:" + contact.getName() + " | Email:" + contact.getEmail());
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-
-            // Rolling back the changes to make the data consistent in case of any failure 
-            // in between multiple database write operations.
-            tx.rollback();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+        DataBaseManager dataBaseManager = new DataBaseManager();
+        EntityManager em = dataBaseManager.getEntityManager();
+        em.getTransaction().begin();
+        
+        Contact contact = new Contact(1,"Teste","EMAIL");
+        em.persist(contact);
+        em.flush();
+        
+        List<Map<String,Object>> listMap;
+        Session session = dataBaseManager.getSession();
+        Query q = session.createSQLQuery("select * from Contact");
+        q.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        listMap = q.list();
+        for(Map<String,Object> map:listMap){
+            System.out.println(map.get("id"));
+            System.out.println(map.get("name"));
+            System.out.println(map.get("email"));
         }
+        
+        Contact temp = em.find(Contact.class,1);
+        em.remove(temp);
+        em.flush();
+        
+        em.getTransaction().commit();
+        em.close();
+
     }
 }
