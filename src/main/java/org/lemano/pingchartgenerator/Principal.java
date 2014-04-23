@@ -27,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import org.lemano.diapingchartgeneratorlpers.JListPersonalizado;
-import org.lemano.pingchartgenerator.dao.DominioDao;
 import org.lemano.pingchartgenerator.helpers.JComboBoxCores;
 import org.lemano.pingchartgenerator.impl.DominioDaoImpl;
 import org.lemano.pingchartgenerator.model.Cor;
